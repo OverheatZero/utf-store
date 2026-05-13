@@ -44,3 +44,19 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+deploy:
+  needs: docker
+  runs-on: ubuntu-latest
+
+  steps:
+    - name: Deploy on VPS
+      uses: appleboy/ssh-action@v1.2.0
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        script: |
+          cd ~/utfstore
+          docker compose pull
+          docker compose up -d
