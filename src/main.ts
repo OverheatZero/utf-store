@@ -1,13 +1,22 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
+import { env } from "./shared/config/env";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(3000);
+  app.enableCors({
+    origin: env.corsOrigin ?? true,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    maxAge: 10,
+  });
+
+  await app.listen(process.env.PORT ?? 3000);
 }
 
-bootstrap();
+void bootstrap();
