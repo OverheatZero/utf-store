@@ -157,6 +157,11 @@ npx prisma migrate status
 
 Use quando quiser checar se o banco está sincronizado com `prisma/migrations`.
 
+## Subir o banco de acordo com as migrations
+```bash
+npx prisma db push
+```
+
 ## Gerar client após alterar `schema.prisma`
 
 ```bash
