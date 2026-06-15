@@ -7,6 +7,7 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { AuthGuard } from "./modules/auth/auth.guard";
 import { ListingsModule } from "./modules/listings/listings.module";
 import { CategoriesModule } from "./modules/categories/categories.module";
+import { ChatModule } from "./modules/chat/chat.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CategoriesModule } from "./modules/categories/categories.module";
     AuthModule,
     ListingsModule,
     CategoriesModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [
