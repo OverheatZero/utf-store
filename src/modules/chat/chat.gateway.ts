@@ -10,7 +10,7 @@ import {
   WsException,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { env } from "src/shared/config/env";
+import { env, getCorsOrigin } from "src/shared/config/env";
 import { ChatService } from "./chat.service";
 import { SendMessageDto } from "./dto/send-message.dto";
 
@@ -25,7 +25,7 @@ type ChatSocketData = {
 @WebSocketGateway({
   namespace: "chat",
   cors: {
-    origin: env.corsOrigin ?? true,
+    origin: getCorsOrigin(),
     credentials: true,
   },
 })

@@ -14,6 +14,11 @@ import { FindMessagesQueryDto } from "./dto/find-messages-query.dto";
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
+  @Get("conversations")
+  findConversations(@ActiveUserId() userId: string) {
+    return this.chatService.findConversations(userId);
+  }
+
   @Get("messages")
   findConversation(
     @ActiveUserId() userId: string,

@@ -37,6 +37,10 @@ const messageInclude = {
   },
 } satisfies Prisma.MessageInclude;
 
+type MessageWithRelations = Prisma.MessageGetPayload<{
+  include: typeof messageInclude;
+}>;
+
 @Injectable()
 export class ChatService {
   constructor(private readonly chatRepo: ChatRepository) {}
@@ -60,6 +64,42 @@ export class ChatService {
     });
 
     return { message };
+  }
+
+  async findConversations(userId: string) {
+    const messages = (await this.chatRepo.findMany({
+      where: {
+        OR: [{ senderId: userId }, { receiverId: userId }],
+      },
+      include: messageInclude,
+      orderBy: { createdAt: "desc" },
+    })) as MessageWithRelations[];
+
+    const conversations = new Map<string, (typeof messages)[number]>();
+
+    for (const message of messages) {
+      const otherUserId =
+        message.senderId === userId ? message.receiverId : message.senderId;
+      const conversationId = `${message.listingId}:${otherUserId}`;
+
+      if (!conversations.has(conversationId)) {
+        conversations.set(conversationId, message);
+      }
+    }
+
+    return {
+      conversations: Array.from(conversations.values()).map((message) => {
+        const contact =
+          message.senderId === userId ? message.receiver : message.sender;
+
+        return {
+          id: `${message.listingId}:${contact.id}`,
+          listing: message.listing,
+          contact,
+          lastMessage: message,
+        };
+      }),
+    };
   }
 
   async findConversation(userId: string, query: FindMessagesQueryDto) {
