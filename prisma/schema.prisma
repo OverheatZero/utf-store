@@ -22,6 +22,7 @@ model User {
   campus     String
   avatarUrl  String
   bio        String
+  defaultUserPrompt String   @default("usuario gostaria de ver livros") @map("default_user_prompt")
   isVerified Boolean  @default(false)
   createdAt  DateTime @default(now()) @map("create_at")
   updatedAt  DateTime @updatedAt @map("update_at")

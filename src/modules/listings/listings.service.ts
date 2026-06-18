@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 import { type Prisma } from "generated/prisma/client";
 import { ListingsRepository } from "src/shared/database/repositories/listings.repositories";
+import { LocalUploadedFile } from "src/shared/uploads/local-upload";
 import { CreateListingDto } from "./dto/create-listing.dto";
 import { FindListingsQueryDto } from "./dto/find-listings-query.dto";
 import { UpdateListingDto } from "./dto/update-listing.dto";
@@ -136,6 +137,44 @@ export class ListingsService {
     });
   }
 
+  async addImage(
+    userId: string,
+    listingId: string,
+    file: LocalUploadedFile,
+    url: string,
+    isCover?: string,
+    position?: string,
+  ) {
+    const listing = await this.findListingOrThrow(listingId);
+
+    if (listing.sellerId !== userId) {
+      throw new ForbiddenException("You cannot update this listing");
+    }
+
+    const imagesCount = await this.listingsRepo.countImages({
+      listingId,
+    });
+    const shouldBeCover = this.parseBoolean(isCover) || imagesCount === 0;
+
+    if (shouldBeCover) {
+      await this.listingsRepo.updateImages({
+        where: { listingId },
+        data: { isCover: false },
+      });
+    }
+
+    const image = await this.listingsRepo.createImage({
+      data: {
+        listingId,
+        url,
+        isCover: shouldBeCover,
+        position: this.parseOptionalInteger(position) ?? imagesCount,
+      },
+    });
+
+    return { image };
+  }
+
   private async findListingOrThrow(listingId: string) {
     const listing = await this.listingsRepo.findUnique({
       where: { id: listingId },
@@ -151,5 +190,19 @@ export class ListingsService {
     const category = await this.listingsRepo.findCategoryById(categoryId);
 
     if (!category) throw new NotFoundException("Category not found");
+  }
+
+  private parseBoolean(value?: string) {
+    return value === "true" || value === "1";
+  }
+
+  private parseOptionalInteger(value?: string) {
+    if (!value) {
+      return undefined;
+    }
+
+    const parsedValue = Number(value);
+
+    return Number.isInteger(parsedValue) ? parsedValue : undefined;
   }
 }

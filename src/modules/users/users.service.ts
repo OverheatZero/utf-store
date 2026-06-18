@@ -45,6 +45,7 @@ export class UsersService {
         campus: updateMeDto.campus,
         avatarUrl: updateMeDto.avatarUrl,
         bio: updateMeDto.bio,
+        defaultUserPrompt: updateMeDto.defaultUserPrompt,
       },
       omit: { password: true },
     });

@@ -26,6 +26,18 @@ export class ListingsRepository {
     return this.prismaService.listing.delete(deleteDto);
   }
 
+  createImage(createDto: Prisma.ListingImageCreateArgs) {
+    return this.prismaService.listingImage.create(createDto);
+  }
+
+  countImages(where: Prisma.ListingImageWhereInput) {
+    return this.prismaService.listingImage.count({ where });
+  }
+
+  updateImages(updateDto: Prisma.ListingImageUpdateManyArgs) {
+    return this.prismaService.listingImage.updateMany(updateDto);
+  }
+
   findCategoryById(categoryId: string) {
     return this.prismaService.category.findUnique({
       where: { id: categoryId },
