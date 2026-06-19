@@ -40,7 +40,7 @@ export class SignupDto {
 
   @IsString({ message: "A URL do avatar precisa ser uma string" })
   @IsOptional()
-  avatarUrl: string;
+  avatarUrl?: string;
 
   @IsString({ message: "A bio precisa ser uma string" })
   @IsNotEmpty({

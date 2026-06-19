@@ -20,7 +20,7 @@ model User {
   password   String
   course     String
   campus     String
-  avatarUrl  String
+  avatarUrl  String?
   bio        String
   defaultUserPrompt String   @default("usuario gostaria de ver livros") @map("default_user_prompt")
   isVerified Boolean  @default(false)

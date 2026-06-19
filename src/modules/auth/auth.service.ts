@@ -54,7 +54,7 @@ export class AuthService {
         name,
         email,
         password: hashedPassword,
-        avatarUrl: signupDto.avatarUrl,
+        avatarUrl: signupDto.avatarUrl || null,
         bio: signupDto.bio,
         campus: signupDto.campus,
         course: signupDto.course,
