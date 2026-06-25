@@ -184,6 +184,15 @@ Exemplo:
 npx prisma migrate dev --name add_user_profile_fields
 ```
 
+## Aplicar seeds
+
+Dados pré-existentes no banco
+
+```bash
+npx prisma db seed
+```
+
+
 ## Aplicar migrations já existentes (sem criar novas)
 
 Para ambientes que só devem aplicar migrations versionadas:

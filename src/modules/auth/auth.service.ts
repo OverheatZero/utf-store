@@ -58,6 +58,7 @@ export class AuthService {
         bio: signupDto.bio,
         campus: signupDto.campus,
         course: signupDto.course,
+        role: "client",
       },
     });
 
