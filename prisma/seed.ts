@@ -7,8 +7,8 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
 });
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@admin.com";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "admin123";
+const ADMIN_EMAIL = "admin@utfpr.edu.br";
+const ADMIN_PASSWORD = "admin123";
 
 async function main() {
   const passwordHash = await hash(ADMIN_PASSWORD, 12);
