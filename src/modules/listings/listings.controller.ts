@@ -8,9 +8,19 @@ import {
   Patch,
   Post,
   Query,
+  Req,
+  UploadedFile,
+  UseInterceptors,
 } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import type { Request } from "express";
 import { ActiveUserId } from "src/shared/decorators/ActiveUserId";
 import { IsPublic } from "src/shared/decorators/IsPublic";
+import {
+  buildUploadedFileUrl,
+  createImageUploadOptions,
+} from "src/shared/uploads/local-upload";
+import type { LocalUploadedFile } from "src/shared/uploads/local-upload";
 import { CreateListingDto } from "./dto/create-listing.dto";
 import { FindListingsQueryDto } from "./dto/find-listings-query.dto";
 import { UpdateListingDto } from "./dto/update-listing.dto";
@@ -55,5 +65,29 @@ export class ListingsController {
     @Param("id", ParseUUIDPipe) listingId: string,
   ) {
     return this.listingsService.remove(userId, listingId);
+  }
+
+  @Post(":id/images")
+  @UseInterceptors(
+    FileInterceptor("image", createImageUploadOptions("listings")),
+  )
+  addImage(
+    @ActiveUserId() userId: string,
+    @Param("id", ParseUUIDPipe) listingId: string,
+    @UploadedFile() file: LocalUploadedFile,
+    @Req() request: Request,
+    @Body("isCover") isCover?: string,
+    @Body("position") position?: string,
+  ) {
+    const url = buildUploadedFileUrl(request, "listings", file);
+
+    return this.listingsService.addImage(
+      userId,
+      listingId,
+      file,
+      url,
+      isCover,
+      position,
+    );
   }
 }

@@ -21,14 +21,16 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV DATABASE_URL="postgresql://fake:fake@localhost:5432/fake"
 
 COPY package*.json ./
 COPY prisma ./prisma
+COPY prisma.config.ts ./
 
-RUN npm ci --omit=dev
+RUN npm ci
 RUN npx prisma generate --schema=./prisma/schema.prisma
 
 COPY --from=build /app/dist ./dist
 
 EXPOSE 3000
-CMD ["node", "dist/src/main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]

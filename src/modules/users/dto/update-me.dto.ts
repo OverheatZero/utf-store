@@ -1,4 +1,10 @@
-import { IsEmail, IsOptional, IsString, MinLength } from "class-validator";
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from "class-validator";
 
 export class UpdateMeDto {
   @IsString({ message: "O nome precisa ser uma string" })
@@ -8,9 +14,12 @@ export class UpdateMeDto {
   @IsString({ message: "O email precisa ser uma string" })
   @IsEmail(
     {
-      host_whitelist: [/(?:[A-Za-z0-9-]+\.)*utfpr\.edu\.br$/i],
+      host_whitelist: [/^alunos\.utfpr\.edu\.br$/i],
     },
-    { message: "O email precisa ser institucional da UTFPR (utfpr.edu.br)" },
+    {
+      message:
+        "O email precisa ser institucional de aluno da UTFPR (alunos.utfpr.edu.br)",
+    },
   )
   @IsOptional()
   email?: string;
@@ -31,4 +40,11 @@ export class UpdateMeDto {
   @MinLength(25, { message: "A bio precisa ter no minimo 25 caracteres" })
   @IsOptional()
   bio?: string;
+
+  @IsString({ message: "O prompt padrao precisa ser uma string" })
+  @MaxLength(500, {
+    message: "O prompt padrao pode ter no maximo 500 caracteres",
+  })
+  @IsOptional()
+  defaultUserPrompt?: string;
 }

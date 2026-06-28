@@ -16,9 +16,12 @@ export class SignupDto {
   @IsNotEmpty({ message: "O email não pode estar vázio" })
   @IsEmail(
     {
-      host_whitelist: [/(?:[A-Za-z0-9-]+\.)*utfpr\.edu\.br$/i],
+      host_whitelist: [/^alunos\.utfpr\.edu\.br$/i],
     },
-    { message: "O email precisa ser institucional da UTFPR (utfpr.edu.br)" },
+    {
+      message:
+        "O email precisa ser institucional de aluno da UTFPR (alunos.utfpr.edu.br)",
+    },
   )
   email: string;
 
@@ -37,7 +40,7 @@ export class SignupDto {
 
   @IsString({ message: "A URL do avatar precisa ser uma string" })
   @IsOptional()
-  avatarUrl: string;
+  avatarUrl?: string;
 
   @IsString({ message: "A bio precisa ser uma string" })
   @IsNotEmpty({

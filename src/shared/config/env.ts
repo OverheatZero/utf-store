@@ -19,12 +19,27 @@ class Env {
   @IsString()
   @IsOptional()
   corsOrigin?: string;
+
+  @IsString()
+  @IsOptional()
+  openRouterApiKey?: string;
+
+  @IsString()
+  @IsOptional()
+  openRouterModel?: string;
+
+  @IsString()
+  @IsOptional()
+  recommendationsSystemPrompt?: string;
 }
 
 export const env: Env = plainToInstance(Env, {
   dbURL: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
   corsOrigin: process.env.CORS_ORIGIN,
+  openRouterApiKey: process.env.OPENROUTER_API_KEY,
+  openRouterModel: process.env.OPENROUTER_MODEL,
+  recommendationsSystemPrompt: process.env.RECOMMENDATIONS_SYSTEM_PROMPT,
 });
 
 export const getCorsOrigin = (): string | string[] | boolean => {
