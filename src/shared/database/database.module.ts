@@ -3,6 +3,7 @@ import { PrismaService } from "./prisma.service";
 import { UsersRepository } from "./repositories/users.repositories";
 import { ListingsRepository } from "./repositories/listings.repositories";
 import { CategoriesRepository } from "./repositories/categories.repositories";
+import { ChatRepository } from "./repositories/chat.repositories";
 
 // NOTE: Provider`s por padrão são privados, preciso informar no `exports` o que está sendo exportado para outros módulos poderem utilizar.
 
@@ -14,7 +15,13 @@ import { CategoriesRepository } from "./repositories/categories.repositories";
     UsersRepository,
     ListingsRepository,
     CategoriesRepository,
+    ChatRepository,
   ],
-  exports: [UsersRepository, ListingsRepository, CategoriesRepository],
+  exports: [
+    UsersRepository,
+    ListingsRepository,
+    CategoriesRepository,
+    ChatRepository,
+  ],
 })
 export class DatabaseModule {}

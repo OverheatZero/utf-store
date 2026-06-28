@@ -27,6 +27,16 @@ export const env: Env = plainToInstance(Env, {
   corsOrigin: process.env.CORS_ORIGIN,
 });
 
+export const getCorsOrigin = (): string | string[] | boolean => {
+  const origins = env.corsOrigin
+    ?.split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  if (!origins?.length) return true;
+  return origins.length === 1 ? origins[0] : origins;
+};
+
 const errors = validateSync(env);
 
 if (errors.length > 0) {
