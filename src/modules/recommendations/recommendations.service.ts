@@ -181,7 +181,7 @@ export class RecommendationsService {
               },
             ],
             temperature: 0.1,
-            max_tokens: 1000,
+            max_tokens: 10000,
           }),
           signal: controller.signal,
         },
