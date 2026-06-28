@@ -25,9 +25,10 @@ ENV PORT=3000
 COPY package*.json ./
 COPY prisma ./prisma
 
-RUN npm ci --omit=dev && npx prisma generate
+RUN npm ci --omit=dev
+RUN npx prisma generate --schema=./prisma/schema.prisma
 
 COPY --from=build /app/dist ./dist
 
 EXPOSE 3000
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
