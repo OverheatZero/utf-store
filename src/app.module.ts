@@ -9,6 +9,7 @@ import { ListingsModule } from "./modules/listings/listings.module";
 import { CategoriesModule } from "./modules/categories/categories.module";
 import { ChatModule } from "./modules/chat/chat.module";
 import { RecommendationsModule } from "./modules/recommendations/recommendations.module";
+import { HealthController } from "./health.controller";
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { RecommendationsModule } from "./modules/recommendations/recommendations
     ChatModule,
     RecommendationsModule,
   ],
-  controllers: [],
+  controllers: [HealthController],
   providers: [
     {
       provide: APP_GUARD,
