@@ -32,6 +32,19 @@ export class AuthService {
 
     const accessToken = await this.generateAccessToken(user.id);
 
+    if (!user.isVerified) {
+      try {
+        await this.usersRepo.update({
+          where: { id: user.id },
+          data: { isVerified: true },
+        });
+      } catch (err: any) {
+        throw new ConflictException(
+          "Failed to update user verification status",
+        );
+      }
+    }
+
     return { accessToken };
   }
 

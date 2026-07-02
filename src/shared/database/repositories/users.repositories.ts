@@ -17,4 +17,8 @@ export class UsersRepository {
   update(updateDto: Prisma.UserUpdateArgs) {
     return this.prismaService.user.update(updateDto);
   }
+
+  findMany(findManyDto: Prisma.UserFindManyArgs) {
+    return this.prismaService.user.findMany(findManyDto);
+  }
 }

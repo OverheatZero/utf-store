@@ -13,7 +13,7 @@ export class UsersService {
 
   async getUserById(userId: string) {
     const user = await this.usersRepo.findUnique({
-      where: { id: userId },
+      where: { id: userId, deletedAt: null },
       omit: { password: true },
     });
 
@@ -27,7 +27,7 @@ export class UsersService {
 
     if (updateMeDto.email) {
       const emailOwner = await this.usersRepo.findUnique({
-        where: { email: updateMeDto.email },
+        where: { email: updateMeDto.email, deletedAt: null },
         select: { id: true },
       });
 
@@ -37,7 +37,7 @@ export class UsersService {
     }
 
     const user = await this.usersRepo.update({
-      where: { id: userId },
+      where: { id: userId, deletedAt: null },
       data: {
         name: updateMeDto.name,
         email: updateMeDto.email,
@@ -51,5 +51,38 @@ export class UsersService {
     });
 
     return { me: user };
+  }
+
+  async findAll() {
+    const users = await this.usersRepo.findMany({
+      where: { deletedAt: null },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        course: true,
+        campus: true,
+        avatarUrl: true,
+        bio: true,
+        defaultUserPrompt: true,
+        createdAt: true,
+        isVerified: true,
+      },
+    });
+
+    return { data: users };
+  }
+
+  async delete(userId: string, id: string) {
+    if (userId === id)
+      throw new ConflictException("You cannot delete yourself");
+
+    await this.getUserById(id);
+
+    return this.usersRepo.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
   }
 }

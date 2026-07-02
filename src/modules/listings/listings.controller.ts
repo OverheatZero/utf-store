@@ -10,6 +10,7 @@ import {
   Query,
   Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -25,6 +26,8 @@ import { CreateListingDto } from "./dto/create-listing.dto";
 import { FindListingsQueryDto } from "./dto/find-listings-query.dto";
 import { UpdateListingDto } from "./dto/update-listing.dto";
 import { ListingsService } from "./listings.service";
+import { AdminGuard } from "src/shared/guards";
+import { IsAdmin } from "src/shared/decorators";
 
 @Controller("listings")
 export class ListingsController {
@@ -42,6 +45,19 @@ export class ListingsController {
   @IsPublic()
   findAll(@Query() query: FindListingsQueryDto) {
     return this.listingsService.findAll(query);
+  }
+
+  @Get("/admin")
+  @UseGuards(AdminGuard)
+  @IsAdmin()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  findAllForAdmin(
+    @ActiveUserId() _: string,
+    @Query() query: FindListingsQueryDto,
+  ) {
+    return this.listingsService.findAll(query, {
+      seller: { deletedAt: null },
+    });
   }
 
   @Get(":id")

@@ -31,6 +31,7 @@ model User {
   isVerified Boolean  @default(false)
   createdAt  DateTime @default(now()) @map("create_at")
   updatedAt  DateTime @updatedAt @map("update_at")
+  deletedAt  DateTime? @map("deleted_at")
   role       UserRole @default(client)
 
   listings  Listing[]
