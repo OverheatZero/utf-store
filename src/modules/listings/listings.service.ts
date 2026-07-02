@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 import { type Prisma } from "generated/prisma/client";
 import { ListingsRepository } from "src/shared/database/repositories/listings.repositories";
+import { UsersRepository } from "src/shared/database/repositories/users.repositories";
 import { LocalUploadedFile } from "src/shared/uploads/local-upload";
 import { CreateListingDto } from "./dto/create-listing.dto";
 import { FindListingsQueryDto } from "./dto/find-listings-query.dto";
@@ -23,6 +24,7 @@ const listingInclude = {
       isVerified: true,
       createdAt: true,
       updatedAt: true,
+      deletedAt: true,
     },
   },
   category: true,
@@ -33,7 +35,10 @@ const listingInclude = {
 
 @Injectable()
 export class ListingsService {
-  constructor(private readonly listingsRepo: ListingsRepository) {}
+  constructor(
+    private readonly listingsRepo: ListingsRepository,
+    private readonly usersRepo: UsersRepository,
+  ) {}
 
   async create(userId: string, createListingDto: CreateListingDto) {
     await this.ensureCategoryExists(createListingDto.categoryId);
@@ -56,24 +61,25 @@ export class ListingsService {
     return { listing };
   }
 
-  async findAll(query: FindListingsQueryDto) {
-    const where: Prisma.ListingWhereInput = {
+  async findAll(query: FindListingsQueryDto, where?: Prisma.ListingWhereInput) {
+    const _where: Prisma.ListingWhereInput = where || {
       categoryId: query.categoryId,
       sellerId: query.sellerId,
       status: query.status,
       type: query.type,
       condition: query.condition,
+      seller: { deletedAt: null },
     };
 
     if (query.search) {
-      where.OR = [
+      _where.OR = [
         { title: { contains: query.search, mode: "insensitive" } },
         { description: { contains: query.search, mode: "insensitive" } },
       ];
     }
 
     const listings = await this.listingsRepo.findMany({
-      where,
+      where: _where,
       include: listingInclude,
       orderBy: { createdAt: "desc" },
     });
@@ -128,13 +134,22 @@ export class ListingsService {
   async remove(userId: string, listingId: string) {
     const listing = await this.findListingOrThrow(listingId);
 
-    if (listing.sellerId !== userId) {
+    if (listing.sellerId !== userId && !(await this.isAdmin(userId))) {
       throw new ForbiddenException("You cannot delete this listing");
     }
 
     await this.listingsRepo.delete({
       where: { id: listingId },
     });
+  }
+
+  private async isAdmin(userId: string) {
+    const user = await this.usersRepo.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
+
+    return user?.role === "admin";
   }
 
   async addImage(

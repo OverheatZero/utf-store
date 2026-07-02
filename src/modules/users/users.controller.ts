@@ -1,11 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Patch,
   Post,
   Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -27,6 +30,8 @@ import {
   createImageUploadOptions,
 } from "src/shared/uploads/local-upload";
 import type { LocalUploadedFile } from "src/shared/uploads/local-upload";
+import { AdminGuard } from "src/shared/guards";
+import { IsAdmin } from "src/shared/decorators";
 
 @ApiTags("Users")
 @ApiBearerAuth()
@@ -115,5 +120,21 @@ export class UsersController {
     const avatarUrl = buildUploadedFileUrl(request, "profiles", file);
 
     return this.usersService.updateUser(userId, { avatarUrl });
+  }
+
+  @Get()
+  @UseGuards(AdminGuard)
+  @IsAdmin()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  findAll(@ActiveUserId() _: string) {
+    return this.usersService.findAll();
+  }
+
+  @Delete("/:id")
+  @UseGuards(AdminGuard)
+  @IsAdmin()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  delete(@ActiveUserId() userId: string, @Param("id") id: string) {
+    return this.usersService.delete(userId, id);
   }
 }
