@@ -24,9 +24,12 @@ const toast = useToast()
 const confirm = useConfirm()
 const listingStore = useListingStore()
 
-const STATUS_META: Record<string, { label: string; severity: 'success' | 'secondary' }> = {
-  ACTIVE: { label: 'Ativo', severity: 'success' },
-  INACTIVE: { label: 'Inativo', severity: 'secondary' },
+const STATUS_META: Record<
+  string,
+  { label: string; value: string; severity: 'success' | 'secondary' }
+> = {
+  ACTIVE: { label: 'Ativo', value: 'ACTIVE', severity: 'success' },
+  INACTIVE: { label: 'Inativo', value: 'INACTIVE', severity: 'secondary' },
 }
 
 const CONDITION_META: Record<string, string> = {
@@ -55,11 +58,6 @@ const loading = ref(false)
 const search = ref('')
 const statusFilter = ref<string | null>(null)
 const categoryFilter = ref<string | null>(null)
-
-const statusOptions = Object.entries(STATUS_META).map(([value, meta]) => ({
-  value,
-  label: meta.label,
-}))
 
 const categoryOptions = computed(() => {
   const map = new Map<string, string>()
@@ -213,16 +211,6 @@ fetchListings()
         </IconField>
 
         <Select
-          v-model="statusFilter"
-          :options="statusOptions"
-          option-label="label"
-          option-value="value"
-          placeholder="Todos os status"
-          show-clear
-          class="w-full rounded-xl bg-slate-50 border-none shadow-none"
-        />
-
-        <Select
           v-model="categoryFilter"
           :options="categoryOptions"
           option-label="label"
@@ -248,13 +236,13 @@ fetchListings()
         </template>
 
         <template #grid="{ items }">
-          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="grid! grid-cols-1! gap-6 sm:grid-cols-2! lg:grid-cols-3!">
             <article
               v-for="ad in items as ListingInterface[]"
               :key="ad.id"
               role="button"
               tabindex="0"
-              class="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:shadow-md"
+              class="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white transition"
               @click="openDetails(ad)"
               @keydown.enter="openDetails(ad)"
               @keydown.space.prevent="openDetails(ad)"
@@ -338,7 +326,7 @@ fetchListings()
       </DataView>
     </div>
 
-    <Dialog v-model:visible="detailsVisible" modal dismissable-mask class="w-full max-w-2xl">
+    <Dialog v-model:visible="detailsVisible" modal dismissable-mask class="w-full max-w-4xl">
       <template #header>
         <span
           v-if="selectedAd"
