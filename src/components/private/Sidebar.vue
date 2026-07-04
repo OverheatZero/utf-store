@@ -67,7 +67,6 @@ function confirmLogout(event: Event) {
         <h2 class="text-xl font-bold text-slate-900 tracking-tight">{{ title }}</h2>
       </div>
 
-      <!-- Mantido conforme a regra de não remover elementos -->
       <div class="px-5 mb-2 hidden">
         <CardUser :user="props.user" />
       </div>
