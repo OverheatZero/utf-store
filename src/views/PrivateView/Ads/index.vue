@@ -203,7 +203,7 @@ fetchListings()
       class="bg-white rounded-2xl p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-slate-100"
     >
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center mb-6">
-        <IconField class="w-full sm:flex-1">
+        <IconField class="w-full">
           <InputIcon class="pi pi-search text-slate-400" />
           <InputText
             v-model="search"
@@ -219,7 +219,7 @@ fetchListings()
           option-value="value"
           placeholder="Todos os status"
           show-clear
-          class="w-full sm:w-56 rounded-xl bg-slate-50 border-none shadow-none"
+          class="w-full rounded-xl bg-slate-50 border-none shadow-none"
         />
 
         <Select
@@ -229,11 +229,18 @@ fetchListings()
           option-value="value"
           placeholder="Todas as categorias"
           show-clear
-          class="w-full sm:w-56 rounded-xl bg-slate-50 border-none shadow-none"
+          class="w-full rounded-xl bg-slate-50 border-none shadow-none"
         />
       </div>
 
-      <DataView :value="filteredListings" data-key="id" paginator :rows="9" layout="grid">
+      <DataView
+        :value="filteredListings"
+        data-key="id"
+        paginator
+        :rows="9"
+        layout="grid"
+        :loading="loading"
+      >
         <template #empty>
           <div class="py-12 text-center text-slate-500">
             {{ loading ? 'Carregando anúncios...' : 'Nenhum anúncio encontrado.' }}
@@ -267,7 +274,7 @@ fetchListings()
               <div class="flex flex-1 flex-col p-5">
                 <h2
                   class="font-bold text-slate-900 text-lg tracking-tight line-clamp-1"
-                  v-tooltip.top="ad.title"
+                  v-tooltip.top="{ value: ad.title, class: 'w-full!  max-w-lg' }"
                 >
                   {{ ad.title }}
                 </h2>
@@ -275,7 +282,7 @@ fetchListings()
                 <p
                   v-if="ad.description"
                   class="mt-1 line-clamp-1 text-sm text-slate-500"
-                  v-tooltip.top="ad.description"
+                  v-tooltip.top="{ value: ad.description, class: 'w-full!  max-w-lg' }"
                 >
                   {{ ad.description }}
                 </p>
@@ -290,7 +297,7 @@ fetchListings()
                 <p
                   v-if="ad.location"
                   class="mt-2 line-clamp-1 text-xs font-medium text-slate-500"
-                  v-tooltip.top="ad.location"
+                  v-tooltip.top="{ value: ad.location, class: 'w-full! max-w-lg' }"
                 >
                   <i class="pi pi-map-marker mr-1 text-[10px]" />{{ ad.location }}
                 </p>

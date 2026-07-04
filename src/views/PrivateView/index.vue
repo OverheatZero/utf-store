@@ -10,6 +10,7 @@ import { useUserStore } from '@/stores/user'
 
 const authStore = useAuthStore()
 const userStore = useUserStore()
+
 const sidebarOpen = ref(false)
 
 const navigation = [
@@ -42,10 +43,10 @@ onBeforeMount(() => {
       :navigation="navigation"
       title="UTF-Store Admin"
       subtitle=""
+      @logout="logout"
     />
 
     <div class="flex min-h-screen min-w-0 flex-1 flex-col">
-      <!-- Navbar visível apenas no mobile para abrir o menu -->
       <div class="lg:hidden">
         <Navbar
           :user="userStore.user"
