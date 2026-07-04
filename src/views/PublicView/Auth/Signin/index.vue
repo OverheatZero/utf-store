@@ -59,7 +59,7 @@ function onFormSubmit({ valid, values }: FormSubmitEvent) {
 </script>
 
 <template>
-  <Card class="w-full max-w-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-none rounded-2xl p-4">
+  <Card class="w-md shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-none rounded-2xl p-4">
     <template #title>
       <div class="mb-4">
         <h2 class="text-2xl font-bold text-slate-900 text-center tracking-tight">Admin Login</h2>

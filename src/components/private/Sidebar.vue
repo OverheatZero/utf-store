@@ -3,9 +3,10 @@ defineOptions({ name: 'CompPrivateSidebar' })
 
 import { RouterLink } from 'vue-router'
 import Drawer from 'primevue/drawer'
+import { useConfirm } from 'primevue'
 
 import type UserMeResInterface from '@/domain/user/types/res/UserMeResInterface'
-import CardUser from '../cards/CardUser.vue'
+import CardUser from '@/components/common/cards/CardUser.vue'
 
 interface NavigationItem {
   label: string
@@ -22,15 +23,38 @@ interface Props {
   open: boolean
 }
 
+const confirm = useConfirm()
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'update:open': [value: boolean]
-  logout: []
+  (e: 'update:open', value: boolean): void
+  (e: 'logout'): void
 }>()
 
 function closeSidebar(): void {
   emit('update:open', false)
+}
+
+function confirmLogout(event: Event) {
+  confirm.require({
+    target: event.currentTarget as HTMLElement,
+    group: 'confirmation',
+    message: 'Realmente deseja sair?',
+    icon: 'pi pi-exclamation-circle',
+    rejectProps: {
+      icon: 'pi pi-times',
+      label: 'Não',
+      outlined: true,
+    },
+    acceptProps: {
+      icon: 'pi pi-check',
+      label: 'Sim',
+    },
+    accept: () => {
+      emit('logout')
+    },
+    reject: () => {},
+  })
 }
 </script>
 
@@ -74,7 +98,7 @@ function closeSidebar(): void {
 
       <div class="p-4 border-t border-slate-100">
         <button
-          @click="emit('logout')"
+          @click="confirmLogout"
           class="flex items-center gap-3 w-full rounded-xl px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 font-medium transition-colors text-left"
         >
           <span class="block font-semibold">Logout</span>
@@ -133,7 +157,7 @@ function closeSidebar(): void {
 
       <div class="p-4 border-t border-slate-100">
         <button
-          @click="emit('logout')"
+          @click="confirmLogout"
           class="flex items-center gap-3 w-full rounded-xl px-4 py-3 text-slate-500 hover:bg-slate-50 hover:text-slate-900 font-medium transition-colors text-left"
         >
           <span class="block font-semibold">Logout</span>

@@ -17,12 +17,12 @@ import Tag from 'primevue/tag'
 import ConfirmDialog from 'primevue/confirmdialog'
 import CheckCircleIcon from '@/components/common/icons/CheckCircleIcon.vue'
 import MinusIcon from '@/components/common/icons/MinusIcon.vue'
+import Avatar from '@/components/common/Avatar.vue'
+import TrashIcon from '@/components/common/icons/TrashIcon.vue'
 
-import Avatar from '@/components/Avatar.vue'
 import { useUserStore } from '@/stores/user'
 import type UserFindAllResInterface from '@/domain/user/types/res/UserFindAllResInterface'
 import type { UserRoleType } from '@/domain/user/types/UserRoleType'
-import TrashIcon from '@/components/common/icons/TrashIcon.vue'
 
 const toast = useToast()
 const confirm = useConfirm()

@@ -6,7 +6,7 @@ import ConfirmPopup from 'primevue/confirmpopup'
 import { useConfirm } from 'primevue/useconfirm'
 
 import type UserMeResInterface from '@/domain/user/types/res/UserMeResInterface'
-import Avatar from '../Avatar.vue'
+import Avatar from '@/components/common/Avatar.vue'
 
 interface Props {
   user: UserMeResInterface['me'] | null
@@ -16,9 +16,10 @@ interface Props {
 defineProps<Props>()
 
 const confirm = useConfirm()
+
 const emit = defineEmits<{
-  menuClick: []
-  logout: []
+  (e: 'menuClick'): void
+  (e: 'logout'): void
 }>()
 
 function confirmLogout(event: PointerEvent): void {
