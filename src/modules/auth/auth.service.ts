@@ -16,7 +16,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signin(signinDto: SigninDto) {
+  async signin(signinDto: SigninDto, ambient?: string) {
     const { email, password } = signinDto;
     const user = await this.usersRepo.findUnique({
       where: {
@@ -29,6 +29,12 @@ export class AuthService {
     const isPasswordValid = await compare(password, user.password);
     if (!isPasswordValid)
       throw new UnauthorizedException("Invalid Credentials");
+
+    if (ambient && ambient !== user.role) {
+      throw new UnauthorizedException(
+        `Access denied. This user is a '${user.role}', not an '${ambient}'.`,
+      );
+    }
 
     const accessToken = await this.generateAccessToken(user.id);
 
