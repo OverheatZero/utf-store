@@ -1,0 +1,33 @@
+{
+  "name": "@utf-store/shared",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tipos, constantes e validações compartilhados entre o frontend e o backend",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/cjs/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/cjs/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run build:cjs && npm run build:esm && node ./scripts/write-module-type.mjs",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "dev": "npm run build && tsc -p tsconfig.cjs.json --watch --preserveWatchOutput",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3"
+  }
+}
