@@ -19,10 +19,14 @@ export class RecommendationsController {
   ) {}
 
   @Get("listings")
-  @ApiOperation({ summary: "Listar anúncios ordenados por IA de acordo com os interesses ou busca do usuário" })
+  @ApiOperation({
+    summary:
+      "Listar anúncios ordenados por IA de acordo com os interesses ou busca do usuário",
+  })
   @ApiResponse({
     status: 200,
-    description: "Retorna a lista de anúncios ordenados por relevância e IA com base no perfil do usuário ou prompt de pesquisa.",
+    description:
+      "Retorna a lista de anúncios ordenados por relevância e IA com base no perfil do usuário ou prompt de pesquisa.",
     type: RecommendationResponseDto,
   })
   @ApiResponse({

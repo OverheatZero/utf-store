@@ -10,10 +10,16 @@ export class CategorySummaryResponseDto {
   @ApiProperty({ example: "livros" })
   slug: string;
 
-  @ApiProperty({ example: "http://localhost:3000/uploads/icons/livros.png", nullable: true })
+  @ApiProperty({
+    example: "http://localhost:3000/uploads/icons/livros.png",
+    nullable: true,
+  })
   iconUrl: string | null;
 
-  @ApiProperty({ example: "Categoria destinada a livros universitários", nullable: true })
+  @ApiProperty({
+    example: "Categoria destinada a livros universitários",
+    nullable: true,
+  })
   description: string | null;
 
   @ApiProperty({ example: null, nullable: true })
@@ -33,10 +39,16 @@ export class CategoryDetailsResponseDto {
   @ApiProperty({ example: "livros" })
   slug: string;
 
-  @ApiProperty({ example: "http://localhost:3000/uploads/icons/livros.png", nullable: true })
+  @ApiProperty({
+    example: "http://localhost:3000/uploads/icons/livros.png",
+    nullable: true,
+  })
   iconUrl: string | null;
 
-  @ApiProperty({ example: "Categoria destinada a livros universitários", nullable: true })
+  @ApiProperty({
+    example: "Categoria destinada a livros universitários",
+    nullable: true,
+  })
   description: string | null;
 
   @ApiProperty({ example: null, nullable: true })

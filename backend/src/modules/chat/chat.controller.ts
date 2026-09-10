@@ -28,7 +28,9 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get("conversations")
-  @ApiOperation({ summary: "Listar todas as conversas ativas do usuário autenticado" })
+  @ApiOperation({
+    summary: "Listar todas as conversas ativas do usuário autenticado",
+  })
   @ApiResponse({
     status: 200,
     description: "Lista de conversas retornada com sucesso.",
@@ -43,7 +45,9 @@ export class ChatController {
   }
 
   @Get("messages")
-  @ApiOperation({ summary: "Buscar o histórico de mensagens de uma conversa específica" })
+  @ApiOperation({
+    summary: "Buscar o histórico de mensagens de uma conversa específica",
+  })
   @ApiResponse({
     status: 200,
     description: "Histórico de mensagens retornado com sucesso.",
@@ -73,7 +77,8 @@ export class ChatController {
   })
   @ApiResponse({
     status: 403,
-    description: "Proibido. O usuário autenticado não é o destinatário desta mensagem.",
+    description:
+      "Proibido. O usuário autenticado não é o destinatário desta mensagem.",
   })
   @ApiResponse({
     status: 404,

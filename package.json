@@ -13,6 +13,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
+    "prepare": "husky",
     "dev": "npm run build:shared && concurrently -n api,front -c blue,green \"npm:dev:api\" \"npm:dev:front\"",
     "dev:api": "npm run start:dev -w app-api",
     "dev:front": "npm run dev -w app-front",
@@ -24,16 +25,21 @@
     "start:api": "npm run start:prod -w app-api",
     "preview:front": "npm run preview -w app-front",
     "lint": "npm run lint -w @utf-store/shared --if-present && npm run lint -w app-api && npm run lint -w app-front",
+    "lint:check": "npm exec -w app-api -- eslint \"{src,apps,libs,test}/**/*.ts\" && npm run lint -w app-front",
+    "check": "npm run lint:check && npm run typecheck",
     "format": "npm run format -w app-api && npm run format -w app-front",
     "test": "npm run test -w app-api",
     "test:e2e": "npm run test:e2e -w app-api",
-    "typecheck": "npm run build -w @utf-store/shared && npm run build -w app-front",
+    "typecheck": "npm run build -w @utf-store/shared && npm run typecheck -w app-api && npm run build -w app-front",
     "prisma:generate": "npm exec -w app-api -- prisma generate",
     "prisma:migrate": "npm exec -w app-api -- prisma migrate dev",
     "clean": "rimraf node_modules */node_modules shared/dist backend/dist frontend/dist"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
     "concurrently": "^9.2.1",
+    "husky": "^9.1.7",
     "rimraf": "^6.0.1"
   }
 }

@@ -26,7 +26,8 @@ export class CreateListingDto {
 
   @ApiPropertyOptional({
     description: "Descrição detalhada do item anunciado",
-    example: "Livro em excelente estado de conservação, sem marcações ou rasuras.",
+    example:
+      "Livro em excelente estado de conservação, sem marcações ou rasuras.",
   })
   @IsString({ message: "A descricao precisa ser uma string" })
   @IsOptional()

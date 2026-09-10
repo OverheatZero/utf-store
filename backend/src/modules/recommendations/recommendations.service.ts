@@ -257,7 +257,7 @@ export class RecommendationsService {
       return error.message;
     }
 
-    return String(error);
+    return typeof error === "string" ? error : JSON.stringify(error);
   }
 
   private parseRecommendationRanking(

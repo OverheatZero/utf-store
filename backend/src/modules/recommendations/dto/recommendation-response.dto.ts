@@ -4,7 +4,8 @@ import { ListingDetailsResponseDto } from "../../listings/dto/listing-response.d
 export class RecommendationResponseDto {
   @ApiProperty({
     type: [ListingDetailsResponseDto],
-    description: "Lista de anúncios ordenados por relevância e inteligência artificial",
+    description:
+      "Lista de anúncios ordenados por relevância e inteligência artificial",
   })
   listings: ListingDetailsResponseDto[];
 }

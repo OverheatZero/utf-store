@@ -10,7 +10,10 @@ class ChatUserResponseDto {
   @ApiProperty({ example: "example@alunos.utfpr.edu.br" })
   email: string;
 
-  @ApiProperty({ example: "http://localhost:3000/uploads/profiles/avatar.png", nullable: true })
+  @ApiProperty({
+    example: "http://localhost:3000/uploads/profiles/avatar.png",
+    nullable: true,
+  })
   avatarUrl: string | null;
 
   @ApiProperty({ example: false })
@@ -61,7 +64,11 @@ export class MessageDetailsResponseDto {
 }
 
 export class ConversationDetailsResponseDto {
-  @ApiProperty({ example: "d3b07384-d113-4ec2-a5d6-c0c21e7d8d29:c182bc22-9213-42cc-a292-12a838df29ab", description: "ID da conversa composto por 'listingId:otherUserId'" })
+  @ApiProperty({
+    example:
+      "d3b07384-d113-4ec2-a5d6-c0c21e7d8d29:c182bc22-9213-42cc-a292-12a838df29ab",
+    description: "ID da conversa composto por 'listingId:otherUserId'",
+  })
   id: string;
 
   @ApiProperty({ type: ChatListingResponseDto })

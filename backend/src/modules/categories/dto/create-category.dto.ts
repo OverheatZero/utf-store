@@ -21,7 +21,8 @@ export class CreateCategoryDto {
   name: string;
 
   @ApiProperty({
-    description: "Slug único identificador da categoria (apenas letras minúsculas, números e hifens)",
+    description:
+      "Slug único identificador da categoria (apenas letras minúsculas, números e hifens)",
     example: "livros",
     maxLength: 100,
   })
@@ -43,7 +44,8 @@ export class CreateCategoryDto {
 
   @ApiPropertyOptional({
     description: "Descrição da categoria (máximo 255 caracteres)",
-    example: "Categoria destinada a livros universitários, apostilas e materiais de estudo.",
+    example:
+      "Categoria destinada a livros universitários, apostilas e materiais de estudo.",
     maxLength: 255,
   })
   @IsString({ message: "A descricao precisa ser uma string" })

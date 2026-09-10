@@ -37,7 +37,27 @@ npm run build:shared # gera o build do pacote compartilhado
 | `npm run build:shared` | build apenas do pacote compartilhado |
 | `npm run lint` | lint em todos os workspaces |
 | `npm run test` | testes do backend |
-| `npm run typecheck` | checagem de tipos do frontend |
+| `npm run typecheck` | checagem de tipos de shared, backend e frontend |
+| `npm run lint:check` | lint sem `--fix` (usado pelo hook de pre-commit) |
+| `npm run check` | `lint:check` + `typecheck` |
+
+## Git hooks
+
+Os hooks são gerenciados pelo [husky](https://typicode.github.io/husky/) e
+instalados automaticamente pelo `npm install` (script `prepare`).
+
+| Hook | O que faz |
+| --- | --- |
+| `commit-msg` | valida a mensagem no padrão [Conventional Commits](https://www.conventionalcommits.org/) via commitlint |
+| `pre-commit` | roda `npm run check` (lint + checagem de tipos do monorepo) |
+| `post-checkout` | ao trocar de branch: `npm install` se `package.json`/lock mudou, `prisma generate` se o schema mudou, `build:shared` se o pacote compartilhado mudou |
+| `post-merge` | o mesmo, comparando `ORIG_HEAD..HEAD` após um merge/pull |
+
+Para pular os hooks em uma emergência:
+
+```bash
+git commit --no-verify -m "..."
+```
 
 ## Pacote compartilhado
 

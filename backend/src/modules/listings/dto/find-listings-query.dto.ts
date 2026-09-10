@@ -45,7 +45,8 @@ export class FindListingsQueryDto {
   condition?: string;
 
   @ApiPropertyOptional({
-    description: "Termo de busca textual para encontrar anúncios pelo título ou descrição",
+    description:
+      "Termo de busca textual para encontrar anúncios pelo título ou descrição",
     example: "calculo",
   })
   @IsString({ message: "A busca precisa ser uma string" })

@@ -3,7 +3,8 @@ import { IsOptional, IsString, MaxLength } from "class-validator";
 
 export class RecommendationListingsQueryDto {
   @ApiPropertyOptional({
-    description: "Prompt opcional para personalizar a busca/recomendação de anúncios de forma contextual (máximo 500 caracteres). Se omitido, usará o prompt padrão do usuário.",
+    description:
+      "Prompt opcional para personalizar a busca/recomendação de anúncios de forma contextual (máximo 500 caracteres). Se omitido, usará o prompt padrão do usuário.",
     example: "livros de cálculo e física para engenharia",
     maxLength: 500,
   })

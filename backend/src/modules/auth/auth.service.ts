@@ -44,7 +44,7 @@ export class AuthService {
           where: { id: user.id },
           data: { isVerified: true },
         });
-      } catch (err: any) {
+      } catch {
         throw new ConflictException(
           "Failed to update user verification status",
         );

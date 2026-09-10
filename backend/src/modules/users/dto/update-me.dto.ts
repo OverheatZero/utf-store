@@ -68,7 +68,8 @@ export class UpdateMeDto {
   bio?: string;
 
   @ApiPropertyOptional({
-    description: "Prompt padrão do usuário para buscas/recomendações (máximo de 500 caracteres)",
+    description:
+      "Prompt padrão do usuário para buscas/recomendações (máximo de 500 caracteres)",
     example: "usuario gostaria de ver livros de calculo",
     maxLength: 500,
   })

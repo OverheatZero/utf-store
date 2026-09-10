@@ -43,7 +43,8 @@ export class UsersController {
   @ApiOperation({ summary: "Obter dados do usuário autenticado" })
   @ApiResponse({
     status: 200,
-    description: "Retorna as informações do perfil do usuário autenticado com sucesso.",
+    description:
+      "Retorna as informações do perfil do usuário autenticado com sucesso.",
     type: MeResponseDto,
   })
   @ApiResponse({
@@ -85,7 +86,9 @@ export class UsersController {
   @UseInterceptors(
     FileInterceptor("image", createImageUploadOptions("profiles")),
   )
-  @ApiOperation({ summary: "Atualizar imagem de perfil (avatar) do usuário autenticado" })
+  @ApiOperation({
+    summary: "Atualizar imagem de perfil (avatar) do usuário autenticado",
+  })
   @ApiConsumes("multipart/form-data")
   @ApiBody({
     schema: {
@@ -94,7 +97,8 @@ export class UsersController {
         image: {
           type: "string",
           format: "binary",
-          description: "Arquivo de imagem (formatos suportados: png, jpg, jpeg)",
+          description:
+            "Arquivo de imagem (formatos suportados: png, jpg, jpeg)",
         },
       },
     },
@@ -133,7 +137,6 @@ export class UsersController {
   @Delete("/:id")
   @UseGuards(AdminGuard)
   @IsAdmin()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   delete(@ActiveUserId() userId: string, @Param("id") id: string) {
     return this.usersService.delete(userId, id);
   }

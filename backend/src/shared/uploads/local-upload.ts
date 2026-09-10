@@ -1,9 +1,28 @@
 import { BadRequestException } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import { existsSync, mkdirSync } from "node:fs";
+import { createRequire } from "node:module";
 import { extname, join } from "node:path";
 
-const { diskStorage } = require("multer");
+// multer chega como dependência transitiva do @nestjs/platform-express e não
+// publica tipos próprios; carregamos em CJS com uma assinatura mínima.
+type DiskStorageOptions = {
+  destination: (
+    req: unknown,
+    file: unknown,
+    callback: (error: Error | null, destination: string) => void,
+  ) => void;
+  filename: (
+    req: unknown,
+    file: { originalname: string },
+    callback: (error: Error | null, filename: string) => void,
+  ) => void;
+};
+
+const loadModule = createRequire(__filename);
+const { diskStorage } = loadModule("multer") as {
+  diskStorage: (options: DiskStorageOptions) => unknown;
+};
 
 const uploadRoot = join(process.cwd(), "uploads");
 const allowedImageMimeTypes = new Set([

@@ -76,7 +76,9 @@ export class ListingsController {
 
   @Get()
   @IsPublic()
-  @ApiOperation({ summary: "Buscar todos os anúncios ativos com filtros opcionais" })
+  @ApiOperation({
+    summary: "Buscar todos os anúncios ativos com filtros opcionais",
+  })
   @ApiResponse({
     status: 200,
     description: "Lista de anúncios ativos retornada com sucesso.",
@@ -89,7 +91,6 @@ export class ListingsController {
   @Get("/admin")
   @UseGuards(AdminGuard)
   @IsAdmin()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   findAllForAdmin(
     @ActiveUserId() _: string,
     @Query() query: FindListingsQueryDto,
@@ -133,7 +134,8 @@ export class ListingsController {
   })
   @ApiResponse({
     status: 403,
-    description: "Proibido. O usuário autenticado não é o proprietário do anúncio.",
+    description:
+      "Proibido. O usuário autenticado não é o proprietário do anúncio.",
   })
   @ApiResponse({
     status: 404,
@@ -160,7 +162,8 @@ export class ListingsController {
   })
   @ApiResponse({
     status: 403,
-    description: "Proibido. O usuário autenticado não é o proprietário do anúncio.",
+    description:
+      "Proibido. O usuário autenticado não é o proprietário do anúncio.",
   })
   @ApiResponse({
     status: 404,
@@ -187,11 +190,13 @@ export class ListingsController {
         image: {
           type: "string",
           format: "binary",
-          description: "Arquivo de imagem (formatos suportados: png, jpg, jpeg)",
+          description:
+            "Arquivo de imagem (formatos suportados: png, jpg, jpeg)",
         },
         isCover: {
           type: "string",
-          description: "Define se esta imagem deve ser a capa do anúncio ('true' ou 'false')",
+          description:
+            "Define se esta imagem deve ser a capa do anúncio ('true' ou 'false')",
           example: "true",
         },
         position: {
@@ -217,7 +222,8 @@ export class ListingsController {
   })
   @ApiResponse({
     status: 403,
-    description: "Proibido. O usuário autenticado não é o proprietário do anúncio.",
+    description:
+      "Proibido. O usuário autenticado não é o proprietário do anúncio.",
   })
   @ApiResponse({
     status: 404,

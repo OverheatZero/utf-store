@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+
+# $3 = 1 apenas em troca de branch; 0 em checkout de arquivo
+if [ "$3" != "1" ]; then
+    exit 0
+fi
+
+changed_files=$(git diff --name-only $1 $2)
+
+check_run() {
+    pattern=$1
+    cmd=$2
+    msg=$3
+
+    if echo "$changed_files" | grep -qE "$pattern"; then
+        echo "--- [Husky] $msg ---"
+        eval "$cmd"
+    fi
+}
+
+check_run "package(-lock)?\.json" "npm install" "Nova branch possui dependências diferentes: Instalando..."
+check_run "backend/prisma/schema\.prisma" "npm run prisma:generate" "Nova branch possui esquema diferente: Gerando Prisma Client..."
+check_run "^shared/" "npm run build:shared" "Nova branch alterou o pacote shared: Recompilando..."

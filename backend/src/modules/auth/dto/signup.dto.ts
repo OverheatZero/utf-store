@@ -18,7 +18,8 @@ export class SignupDto {
   name: string;
 
   @ApiProperty({
-    description: "Endereço de e-mail institucional de aluno da UTFPR (deve terminar com @alunos.utfpr.edu.br)",
+    description:
+      "Endereço de e-mail institucional de aluno da UTFPR (deve terminar com @alunos.utfpr.edu.br)",
     example: "example@alunos.utfpr.edu.br",
   })
   @IsString({ message: "O email precisa ser uma string" })
@@ -70,7 +71,8 @@ export class SignupDto {
 
   @ApiProperty({
     description: "Biografia do usuário (mínimo de 25 caracteres)",
-    example: "Estudante de Engenharia de Software interessado em tecnologias web.",
+    example:
+      "Estudante de Engenharia de Software interessado em tecnologias web.",
     minLength: 25,
   })
   @IsString({ message: "A bio precisa ser uma string" })

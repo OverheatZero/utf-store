@@ -66,7 +66,9 @@ export class CategoriesController {
 
   @Get(":id")
   @IsPublic()
-  @ApiOperation({ summary: "Buscar os detalhes de uma categoria específica por ID" })
+  @ApiOperation({
+    summary: "Buscar os detalhes de uma categoria específica por ID",
+  })
   @ApiResponse({
     status: 200,
     description: "Detalhes da categoria retornados com sucesso.",
