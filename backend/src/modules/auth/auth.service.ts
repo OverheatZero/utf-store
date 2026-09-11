@@ -30,7 +30,7 @@ export class AuthService {
     if (!isPasswordValid)
       throw new UnauthorizedException("Invalid Credentials");
 
-    if (ambient && ambient !== user.role) {
+    if (ambient === "admin" && user.role !== "admin") {
       throw new UnauthorizedException(
         `Access denied. This user is a '${user.role}', not an '${ambient}'.`,
       );
