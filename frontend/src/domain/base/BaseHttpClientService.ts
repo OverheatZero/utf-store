@@ -23,7 +23,7 @@ export default class BaseHttpClientService {
         'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: `Bearer ${token}`,
-        ambient: 'admin',
+        ambient: 'client',
       },
     }
 
