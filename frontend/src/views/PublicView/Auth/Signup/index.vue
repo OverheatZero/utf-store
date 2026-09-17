@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineOptions({ name: 'PublicAuthSignin' })
+defineOptions({ name: 'PublicAuthSignup' })
 
 import axios from 'axios'
 import { z } from 'zod'
@@ -17,7 +17,7 @@ import Card from 'primevue/card'
 
 import { useAuthStore } from '@/stores/auth'
 import type AuthSignupReqInterface from '@/domain/auth/types/req/AuthSignupReqInterface'
-import REGEX_EMAIL from '@/helpers/regex/email'
+import { isUtfprStudentEmail } from '@utf-store/shared'
 
 const toast = useToast()
 const authStore = useAuthStore()
@@ -26,9 +26,12 @@ const router = useRouter()
 const resolver = zodResolver(
   z.object({
     name: z.string().nonempty({ error: 'Nome é obrigatório' }),
-    email: z.string().nonempty({ error: 'Email é obrigatório' }).regex(REGEX_EMAIL, {
-      error: 'O email precisa ser institucional da UTFPR (utfpr.edu.br)',
-    }),
+    email: z
+      .string()
+      .nonempty({ error: 'Email é obrigatório' })
+      .refine((val) => isUtfprStudentEmail(val), {
+        message: 'O email precisa ser de estudante da UTFPR (@alunos.utfpr.edu.br)',
+      }),
     password: z
       .string()
       .nonempty({ error: 'Senha é obrigatória' })

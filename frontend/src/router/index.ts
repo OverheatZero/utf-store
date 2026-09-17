@@ -3,7 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 
 import authRoutes from '@/router/public/authRoutes'
 import userRoutes from '@/router/private/userRoutes'
-import adsRoutes from '@/router/private/adsRoutes'
+//import adsRoutes from '@/router/private/adsRoutes'
 
 const PublicView = () => import('@/views/PublicView/index.vue')
 const PrivateView = () => import('@/views/PrivateView/index.vue')
@@ -42,7 +42,7 @@ const router = createRouter({
       beforeEnter: (_to, _from) => {
         if (!isAuthenticated()) return { path: '/', replace: true }
       },
-      children: [...userRoutes, ...adsRoutes],
+      children: [...userRoutes],
     },
 
     {
