@@ -1,0 +1,6 @@
+# Adds Caddy to the Nixpacks build so it can serve the production build
+[phases.setup]
+nixPkgs = ["caddy"]
+
+[start]
+cmd = "caddy run --config Caddyfile --adapter caddyfile"
