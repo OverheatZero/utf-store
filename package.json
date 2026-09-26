@@ -24,6 +24,7 @@
     "build:front": "npm run build -w app-front",
     "start:api": "npm run start:prod -w app-api",
     "preview:front": "npm run preview -w app-front",
+    "start:front": "npm run start -w app-front",
     "lint": "npm run lint -w @utf-store/shared --if-present && npm run lint -w app-api && npm run lint -w app-front",
     "lint:check": "npm exec -w app-api -- eslint \"{src,apps,libs,test}/**/*.ts\" && npm run lint -w app-front",
     "check": "npm run lint:check && npm run typecheck",
