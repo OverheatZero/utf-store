@@ -1,0 +1,41 @@
+# Monitoramento do ambiente publicado. Roda sozinho, fora de qualquer push.
+#
+# Avisos sobre `schedule` no GitHub Actions:
+#   - só dispara na branch default (main); em branch de feature, use o botão
+#     "Run workflow" (workflow_dispatch);
+#   - o agendamento é suspenso após 60 dias sem atividade no repositório;
+#   - o horário é aproximado: em fila de pico o disparo pode atrasar.
+
+name: Monitorar aplicação
+
+on:
+  schedule:
+    # A cada 15 minutos (UTC).
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+env:
+  APP_URL: https://utf-store.up.railway.app
+
+jobs:
+  health-check:
+    name: Health check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # --fail faz o curl sair com código != 0 em qualquer resposta fora de 2xx,
+      # o que reprova o job. --retry evita que um 502 isolado do rollout do
+      # Railway vire alerta falso.
+      - name: Verificar aplicação
+        run: |
+          curl --fail --silent --show-error \
+            --retry 3 --retry-delay 10 --retry-all-errors --max-time 15 \
+            "$APP_URL/api/health"
+
+      # A API pode estar de pé com o frontend fora: são dois serviços separados
+      # no Railway.
+      - name: Verificar o frontend
+        run: |
+          curl --fail --silent --show-error \
+            --retry 3 --retry-delay 10 --retry-all-errors --max-time 15 \
+            --output /dev/null "$APP_URL/"

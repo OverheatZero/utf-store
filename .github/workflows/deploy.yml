@@ -1,0 +1,106 @@
+# Publicação. Este workflow NÃO publica: ele documenta o caminho de deploy e
+# verifica que a versão em main chegou no ar.
+#
+# Quem publica
+#   O Railway. `.railway/railway.ts` declara os dois serviços com
+#   `source: github("UTF-STORE/utf-store", { branch: "main" })`, então todo push
+#   em main dispara build e deploy automaticamente, sem passar por Actions.
+#
+# O que é construído
+#   backend  → Dockerfile.backend  (NestJS + Prisma atrás de um Caddy interno)
+#   frontend → Dockerfile.frontend (dist do Vue servido pelo Caddy, que faz
+#              proxy de /api, /uploads, /docs e /socket.io para o backend)
+#   Cada serviço tem `watchPatterns` em .railway/railway.ts: mudança só em
+#   frontend/** não redeploya o backend, e vice-versa.
+#
+# Banco de dados
+#   O serviço backend tem `preDeploy: "npx prisma migrate deploy"`. As migrations
+#   de backend/prisma/migrations rodam antes de a nova versão receber tráfego.
+#
+# Infraestrutura
+#   Declarada em .railway/railway.ts e aplicada por railway-config.yml:
+#   `plan` em PR que toca .railway/**, `apply` quando o PR é mergeado.
+#
+# Segredos
+#   JWT_SECRET e OPENROUTER_API_KEY são `preserve()` no IaC: ficam fora do git,
+#   definidos no painel do Railway. O IaC apenas preserva o valor existente.
+#
+# Rollback
+#   Painel do Railway → serviço → Deployments → "Redeploy" na release anterior.
+#   Atenção: migrations já aplicadas não voltam junto.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Sem cancel-in-progress: uma verificação em andamento não deve ser atropelada
+# pelo push seguinte, senão nenhuma das duas conclui nada.
+concurrency:
+  group: deploy-production
+
+env:
+  APP_URL: https://utf-store.up.railway.app
+
+jobs:
+  verificar-publicacao:
+    name: Verificar publicação
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # Registra a publicação em Deployments → production no GitHub, que é o
+    # rastro que o deploy automático do Railway não deixa.
+    environment:
+      name: production
+      url: https://utf-store.up.railway.app
+
+    steps:
+      # O build do Railway leva alguns minutos e começa junto com este job, então
+      # o primeiro curl provavelmente pega a versão antiga ou um 502 de rollout.
+      - name: Aguardar o rollout do Railway
+        run: |
+          for tentativa in $(seq 1 40); do
+            if curl --fail --silent --show-error --max-time 10 "$APP_URL/api/health"; then
+              echo
+              echo "Aplicação respondeu na tentativa $tentativa."
+              exit 0
+            fi
+            echo "Ainda em rollout (tentativa $tentativa/40); nova checagem em 15s."
+            sleep 15
+          done
+          echo "::error::A aplicação não respondeu em /api/health após 10 minutos."
+          exit 1
+
+      # Os três caminhos que o frontend/Caddyfile roteia. Um 200 só em /api/health
+      # não prova que o SPA está sendo servido.
+      - name: Smoke test dos endpoints publicados
+        run: |
+          set -euo pipefail
+          echo "API:"
+          curl --fail --silent --show-error --max-time 15 "$APP_URL/api/health"
+          echo
+          echo "SPA:"
+          curl --fail --silent --show-error --max-time 15 --output /dev/null "$APP_URL/"
+          echo "ok"
+          echo "Swagger:"
+          curl --fail --silent --show-error --max-time 15 --output /dev/null "$APP_URL/docs"
+          echo "ok"
+
+      - name: Resumo
+        if: always()
+        run: |
+          {
+            echo "## Publicação verificada"
+            echo
+            echo "| | |"
+            echo "| --- | --- |"
+            echo "| Publicado por | Railway (deploy automático a partir de \`main\`) |"
+            echo "| URL | $APP_URL |"
+            echo "| Commit que disparou | \`${{ github.sha }}\` |"
+            echo "| Health | $APP_URL/api/health |"
+            echo
+            echo "O Railway não expõe o commit da release por esta rota: o smoke test"
+            echo "prova que a aplicação está no ar, não que esta versão exata subiu."
+          } >> "$GITHUB_STEP_SUMMARY"
