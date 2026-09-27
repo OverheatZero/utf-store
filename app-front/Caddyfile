@@ -1,0 +1,10 @@
+:3000 {
+	root * dist
+	encode gzip zstd
+
+	# Serve static assets, falling back to index.html for SPA routes
+	try_files {path} /index.html
+
+	file_server
+}
+
