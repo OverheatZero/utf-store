@@ -1,0 +1,150 @@
+# Integração contínua: valida o código. Não publica nada.
+#
+# Divisão dos workflows deste repo:
+#   ci.yml         — lint, testes, typecheck e build (este arquivo)
+#   deploy.yml     — documenta e verifica a publicação (feita pelo Railway)
+#   monitoring.yml — checa o endpoint publicado a cada 15 minutos
+#   railway-config.yml — IaC do Railway (plan em PR, apply no merge)
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Um push novo na mesma branch cancela a execução anterior.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # `backend/prisma.config.ts` valida DATABASE_URL, e `prisma generate` é
+  # pré-requisito do typecheck e do build do backend. Não há banco no runner:
+  # este valor só satisfaz a validação (mesmo truque do Dockerfile.backend).
+  DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
+  # O root `prepare` roda husky, que precisa de .git e não serve para CI.
+  HUSKY: 0
+
+jobs:
+  qualidade:
+    name: Qualidade (lint + formatação)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Os dois workspaces importam @utf-store/shared compilado; sem o build,
+      # o ESLint com informação de tipos não resolve os imports.
+      - name: Build do pacote compartilhado
+        run: npm run build:shared
+
+      # Cobre ESLint + Prettier do backend (eslint-plugin-prettier está como
+      # "error" em backend/eslint.config.mjs) e ESLint do frontend.
+      - name: Lint (sem --fix)
+        run: npm run lint:check
+
+      # O Prettier do frontend não passa pelo ESLint, então é um passo à parte.
+      - name: Prettier (frontend)
+        run: npm run format:check -w app-front
+
+  testes:
+    name: Testes automatizados
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build do pacote compartilhado
+        run: npm run build:shared
+
+      - name: Gerar o Prisma Client
+        run: npm run prisma:generate
+
+      # Jest do backend (backend/package.json → "jest"). O `--` vai direto no
+      # workspace: pelo script raiz o npm leria --coverage como flag dele.
+      # Jest sai com código 1 se não encontrar nenhum teste, então este passo
+      # também protege contra o pipeline ficar sem cobertura nenhuma.
+      - name: Testes unitários (backend)
+        run: npm run test -w app-api -- --coverage
+
+      - name: Publicar relatório de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-backend
+          path: backend/coverage
+          if-no-files-found: warn
+          retention-days: 7
+
+  typecheck:
+    name: Checagem de tipos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build do pacote compartilhado
+        run: npm run build:shared
+
+      - name: Gerar o Prisma Client
+        run: npm run prisma:generate
+
+      - name: Tipos do backend
+        run: npm run typecheck -w app-api
+
+      # `build` do frontend é `vue-tsc -b && vite build`: checa os tipos do Vue.
+      - name: Tipos do frontend
+        run: npm run build -w app-front
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # shared + backend (prisma generate && nest build) + frontend (vite build).
+      - name: Build do monorepo
+        run: npm run build
+
+  imagens:
+    name: Imagens Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Constrói exatamente o que o Railway constrói a cada deploy. É o único
+      # job que pega erro de Dockerfile (ex.: caminhos de COPY errados) antes
+      # de a falha aparecer em produção.
+      - name: Backend
+        run: docker build -f Dockerfile.backend -t utf-store-backend:ci .
+
+      - name: Frontend
+        run: docker build -f Dockerfile.frontend -t utf-store-frontend:ci .

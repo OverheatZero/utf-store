@@ -18,10 +18,10 @@ export default [
        * NOTE: Tirando rota de cadastro, pois não é necessário para o MVP na WEB.
        * Caso seja necessário, descomentar o trecho abaixo e adicionar o botão "Cadastrar" na tela de login.
        */
-       {
-         path: 'signup',
-         name: 'public.auth.signup',
-         component: () => import('@/views/PublicView/Auth/Signup/index.vue'),
+      {
+        path: 'signup',
+        name: 'public.auth.signup',
+        component: () => import('@/views/PublicView/Auth/Signup/index.vue'),
       },
     ],
   },
