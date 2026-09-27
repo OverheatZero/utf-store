@@ -80,6 +80,11 @@ export default defineRailway(() => {
       watchPatterns: ["/frontend/**", "/Dockerfile.frontend", ...SHARED_PATHS],
     },
     env: {
+      // Tem que casar com o EXPOSE do Dockerfile.frontend. Sem pinar, o Railway
+      // injeta um PORT qualquer, o Caddy sobe nele e a edge continua batendo na
+      // porta do EXPOSE — resultado: 502 "Application failed to respond".
+      PORT: "3000",
+
       // O domínio privado NÃO acompanha rename de serviço: o backend se chama
       // "backend" mas responde em app-api.railway.internal. Esta referência é
       // resolvida pelo Railway, então continua certa se o domínio mudar.
