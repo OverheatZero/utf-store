@@ -74,6 +74,44 @@ O pacote gera build dual (CommonJS para o NestJS, ESM para o Vite) a partir de
 
 
 
+## CI / CD (GitHub Actions)
+
+`.github/workflows/` tem uma responsabilidade por arquivo:
+
+| Workflow | Quando roda | O que faz |
+| --- | --- | --- |
+| `ci.yml` | PR e push em `main` | `qualidade` (lint + Prettier), `testes` (Jest do backend, com cobertura), `typecheck`, `build` do monorepo e `imagens` (build dos dois Dockerfiles) |
+| `deploy.yml` | push em `main` | **não publica**: aguarda o rollout do Railway, faz smoke test em `/api/health`, `/` e `/docs` e registra a versão em *Deployments → production* |
+| `monitoring.yml` | a cada 15 min (cron) e sob demanda | `curl --fail` no endpoint publicado (API e frontend) |
+| `railway-config.yml` | PR que toca `.railway/**` | IaC do Railway: `plan` no PR, `apply` no merge |
+
+O deploy em si é automático: os dois serviços têm `source: github(..., { branch: "main" })`
+no `.railway/railway.ts`, então o Railway constrói e publica a cada push em
+`main` sem passar pelo Actions. O `deploy.yml` existe para deixar esse caminho
+explícito no repositório e para falhar visivelmente se a versão não subir.
+
+### Testes
+
+```bash
+npm run test                       # Jest do backend
+npm run test -w app-api -- --watch
+```
+
+Os testes vivem em `backend/src/**/*.spec.ts` (é o `testRegex` do Jest em
+`backend/package.json`). Hoje cobrem o `HealthController` — o mesmo endpoint que
+o `monitoring.yml` consulta — e o `getCorsOrigin()` de `backend/src/shared/config/env.ts`.
+
+O Jest usa `moduleDirectories: ["node_modules", "<rootDir>/.."]` pelo mesmo
+motivo do `NODE_PATH=/app/dist` em produção: o código importa
+`src/shared/...` apoiado no `baseUrl` do `tsconfig.json`, e sem isso o Jest não
+resolve esses caminhos.
+
+### Observações sobre o `schedule`
+
+O cron do `monitoring.yml` só dispara na branch default (`main`) e é suspenso
+pelo GitHub após 60 dias sem atividade no repositório. Em qualquer branch dá
+para rodar na mão pelo botão **Run workflow** (`workflow_dispatch`).
+
 ## Deploy (Railway)
 
 Dois serviços a partir deste mesmo repo, mais o Postgres. Um único caminho de
