@@ -47,6 +47,14 @@ jobs:
       - name: Build do pacote compartilhado
         run: npm run build:shared
 
+      # Obrigatório para o lint, não só para o build: o backend importa
+      # `generated/prisma/client`, e as regras `no-unsafe-*` do
+      # typescript-eslint dependem de tipos. Sem gerar o client, todo acesso a
+      # `prismaService.<model>` vira "type that cannot be resolved" — foram 131
+      # erros num runner limpo, que não aparecem em máquina com generated/ antigo.
+      - name: Gerar o Prisma Client
+        run: npm run prisma:generate
+
       # Cobre ESLint + Prettier do backend (eslint-plugin-prettier está como
       # "error" em backend/eslint.config.mjs) e ESLint do frontend.
       - name: Lint (sem --fix)
