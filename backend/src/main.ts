@@ -6,9 +6,15 @@ import { getCorsOrigin } from "./shared/config/env";
 import { join } from "node:path";
 import express from "express";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import type { NestExpressApplication } from "@nestjs/platform-express";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Em produção o Nest fica atrás do Caddy; sem isso o Express reporta
+  // protocol "http" e as URLs de upload saem com http:// numa página https.
+  app.set("trust proxy", 1);
+
   const logger = new Logger("ValidationPipe");
 
   app.useGlobalPipes(
@@ -51,7 +57,12 @@ async function bootstrap() {
 
   SwaggerModule.setup("docs", app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  // Caddy escuta em $PORT e faz proxy para o Nest em $NEST_PORT; fora do
+  // container os dois caem no comportamento antigo ($PORT, todas as interfaces).
+  await app.listen(
+    process.env.NEST_PORT ?? process.env.PORT ?? 3000,
+    process.env.HOST ?? "0.0.0.0",
+  );
 }
 
 void bootstrap();

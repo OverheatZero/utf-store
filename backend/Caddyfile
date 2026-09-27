@@ -1,0 +1,15 @@
+{
+	auto_https off
+	admin off
+}
+
+:{$PORT:3000} {
+	encode gzip zstd
+
+	reverse_proxy 127.0.0.1:{$NEST_PORT:3001} {
+		# This hop is plain HTTP over Railway's private network, so Caddy would
+		# otherwise overwrite the header with "http" and make Nest build
+		# http:// upload URLs for a page served over https.
+		header_up X-Forwarded-Proto https
+	}
+}
