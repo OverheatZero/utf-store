@@ -81,14 +81,18 @@ O pacote gera build dual (CommonJS para o NestJS, ESM para o Vite) a partir de
 | Workflow | Quando roda | O que faz |
 | --- | --- | --- |
 | `ci.yml` | PR e push em `main` | `qualidade` (lint + Prettier), `testes` (Jest do backend, com cobertura), `typecheck`, `build` do monorepo e `imagens` (build dos dois Dockerfiles) |
-| `deploy.yml` | push em `main` | **não publica**: aguarda o rollout do Railway, faz smoke test em `/api/health`, `/` e `/docs` e registra a versão em *Deployments → production* |
-| `monitoring.yml` | a cada 15 min (cron) e sob demanda | `curl --fail` no endpoint publicado (API e frontend) |
-| `railway-config.yml` | PR que toca `.railway/**` | IaC do Railway: `plan` no PR, `apply` no merge |
+| `monitoring.yml` | a cada 15 min (cron) e sob demanda | `curl --fail` nos endpoints publicados (API e frontend) de `production` e `staging` |
+| `railway-config.yml` | PR para `staging`/`production` e push nelas, quando toca `.railway/**` | IaC do Railway: `plan` no PR, `apply` no push, no environment de mesmo nome da branch |
 
-O deploy em si é automático: os dois serviços têm `source: github(..., { branch: "main" })`
-no `.railway/railway.ts`, então o Railway constrói e publica a cada push em
-`main` sem passar pelo Actions. O `deploy.yml` existe para deixar esse caminho
-explícito no repositório e para falhar visivelmente se a versão não subir.
+O deploy em si é automático e não passa pelo Actions: no `.railway/railway.ts`
+cada environment do Railway publica a branch de mesmo nome (`staging` →
+`staging`, `production` → `production`), e o Railway constrói e publica a cada
+push nelas.
+
+O `railway-config.yml` usa o secret `RAILWAY_TOKEN` dos environments `staging`
+e `production` do GitHub, cada um com o project token do environment
+correspondente no Railway. É o token que decide em qual environment o
+plan/apply roda.
 
 ### Testes
 

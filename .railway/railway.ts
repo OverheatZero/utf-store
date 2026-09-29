@@ -9,14 +9,29 @@ import {
 } from "railway/iac";
 
 const REPO = "UTF-STORE/utf-store";
-const BRANCH = "main";
+
+// Cada environment do Railway publica a branch de mesmo nome. O environment
+// alvo vem do token usado no plan/apply (project token é preso a um
+// environment), e ctx.environment traz o nome dele.
+const BRANCHES: Record<string, string> = {
+  staging: "staging",
+  production: "production",
+};
 
 // Os dois serviços buildam a partir da raiz do repo (os workspaces do npm
 // hoistam as dependências), então sem watch patterns todo push redeploya os
 // dois. Estes são os caminhos que realmente afetam cada imagem.
 const SHARED_PATHS = ["/shared/**", "/package.json", "/package-lock.json"];
 
-export default defineRailway(() => {
+export default defineRailway((ctx) => {
+  const environment = ctx.environment ?? "";
+  const BRANCH = BRANCHES[environment];
+  if (!BRANCH) {
+    throw new Error(
+      `Environment "${environment}" sem branch mapeada em .railway/railway.ts`,
+    );
+  }
+
   const db = postgres("postgres");
 
   // region e sizeMB espelham o volume que já existe no projeto. Omitir a
@@ -54,8 +69,10 @@ export default defineRailway(() => {
       // O domínio público da API continua ativo, então clientes externos batem
       // direto no backend. Sem esta variável, getCorsOrigin() devolve true e
       // libera qualquer origem. As chamadas do SPA passam pelo proxy do Caddy e
-      // são same-origin, então não dependem disto.
-      CORS_ORIGIN: "https://utf-store.up.railway.app",
+      // são same-origin, então não dependem disto. A referência é resolvida
+      // pelo Railway em cada environment, então staging aponta para o próprio
+      // domínio do frontend sem precisar fixá-lo aqui.
+      CORS_ORIGIN: "https://${{frontend.RAILWAY_PUBLIC_DOMAIN}}",
 
       OPENROUTER_MODEL: "cohere/north-mini-code:free",
 

@@ -2,9 +2,12 @@
 #
 # Divisão dos workflows deste repo:
 #   ci.yml         — lint, testes, typecheck e build (este arquivo)
-#   deploy.yml     — documenta e verifica a publicação (feita pelo Railway)
-#   monitoring.yml — checa o endpoint publicado a cada 15 minutos
-#   railway-config.yml — IaC do Railway (plan em PR, apply no merge)
+#   monitoring.yml — checa production e staging a cada 15 minutos
+#   railway-config.yml — IaC do Railway (plan em PR, apply no push) para
+#                        staging e production
+#
+# O deploy não passa pelo Actions: o Railway publica sozinho a cada push nas
+# branches staging e production.
 
 name: CI
 
