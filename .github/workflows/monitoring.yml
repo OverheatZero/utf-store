@@ -14,14 +14,24 @@ on:
     - cron: "*/15 * * * *"
   workflow_dispatch:
 
-env:
-  APP_URL: https://utf-store.up.railway.app
-
 jobs:
   health-check:
-    name: Health check
+    name: Health check (${{ matrix.ambiente }})
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    # Sem `environment:` de propósito: o job não usa secrets, e declarar um
+    # environment criaria um registro em Deployments a cada 15 minutos.
+    strategy:
+      # Um ambiente fora do ar não deve esconder o estado do outro.
+      fail-fast: false
+      matrix:
+        include:
+          - ambiente: production
+            url: https://utf-store.up.railway.app
+          - ambiente: staging
+            url: https://frontend-staging-9dcb.up.railway.app
+    env:
+      APP_URL: ${{ matrix.url }}
     steps:
       # --fail faz o curl sair com código != 0 em qualquer resposta fora de 2xx,
       # o que reprova o job. --retry evita que um 502 isolado do rollout do

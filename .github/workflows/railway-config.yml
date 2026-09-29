@@ -1,8 +1,22 @@
+# IaC do Railway (.railway/railway.ts) em dois environments.
+#
+# Cada environment do GitHub (staging, production) guarda o secret
+# RAILWAY_TOKEN com o project token do environment de mesmo nome no Railway.
+# Secret de environment só é entregue a job que declara `environment:`, e o
+# token é quem decide em qual environment do Railway o plan/apply roda.
+#
+#   PR para staging/production → plan no environment da branch de destino
+#   push em staging/production → apply no environment da própria branch
+
 name: Railway config
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, closed]
+    branches: [staging, production]
+    paths:
+      - '.railway/**'
+  push:
+    branches: [staging, production]
     paths:
       - '.railway/**'
 
@@ -10,13 +24,13 @@ permissions:
   contents: read
   pull-requests: write
   actions: read
-  id-token: write
 
 jobs:
   plan:
-    name: Plan
-    if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    name: Plan (${{ github.base_ref }})
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    environment: ${{ github.base_ref }}
     steps:
       - uses: actions/checkout@v4
       - uses: railwayapp/config@v1
@@ -25,13 +39,16 @@ jobs:
           railway-token: ${{ secrets.RAILWAY_TOKEN }}
 
   apply:
-    name: Apply
-    if: github.event.action == 'closed' && github.event.pull_request.merged && github.event.pull_request.head.repo.full_name == github.repository
+    name: Apply (${{ github.ref_name }})
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+    # Dois applies no mesmo environment não podem correr juntos: o segundo seria
+    # rejeitado por StaleEnvironmentError no meio do caminho.
+    concurrency:
+      group: railway-apply-${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
       - uses: railwayapp/config@v1
         with:
           command: apply
