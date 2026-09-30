@@ -4,7 +4,7 @@ import PrivateUsers from '@/views/PrivateView/Users/index.vue'
 export default [
   {
     path: 'users',
-    name: 'private.users',
+    name: 'admin.users',
     component: PrivateUsers,
   },
 ] as Array<RouteRecordRaw>

@@ -4,7 +4,7 @@ import PrivateAds from '@/views/PrivateView/Ads/index.vue'
 export default [
   {
     path: 'ads',
-    name: 'private.ads',
+    name: 'admin.ads',
     component: PrivateAds,
   },
 ] as Array<RouteRecordRaw>

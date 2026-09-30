@@ -8,5 +8,7 @@ export default interface UserMeResInterface {
     avatarUrl: string
     bio: string
     isVerified: boolean
+
+    role: 'admin' | 'client'
   }
 }

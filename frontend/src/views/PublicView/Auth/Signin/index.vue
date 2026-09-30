@@ -13,6 +13,7 @@ import Password from 'primevue/password'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import Card from 'primevue/card'
+import { useUserStore } from '@/stores/user'
 
 import { useAuthStore } from '@/stores/auth'
 import type AuthSigninReqInterface from '@/domain/auth/types/req/AuthSigninReqInterface'
@@ -20,6 +21,7 @@ import { isUtfprStudentEmail } from '@utf-store/shared'
 
 const toast = useToast()
 const authStore = useAuthStore()
+const userStore = useUserStore()
 const router = useRouter()
 
 const resolver = zodResolver(
@@ -40,9 +42,11 @@ const resolver = zodResolver(
 async function signin(data: AuthSigninReqInterface) {
   try {
     await authStore.actSignin(data)
+    const { me } = await userStore.actMe()
     toast.add({ severity: 'success', summary: 'Login efetuado com sucesso.', life: 3000 })
+    const destination = me.role === 'admin' ? '/admin/users' : '/app/listings'
 
-    router.replace('/app')
+    router.replace(destination)
   } catch (err) {
     if (!axios.isAxiosError(err)) return
     const errorMessage = err.response?.data?.message || 'Erro desconhecido'
