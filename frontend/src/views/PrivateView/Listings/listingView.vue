@@ -2,9 +2,11 @@
   <div class="contador-container">
     <h1>Teste pra página de usuário comum</h1>
     <p>Você só pode conseguir ver essa página pelo perfil de usuário comum.</p>
-    
+
     <div class="card">
-      <p>Cliques: <strong>{{ cliques }}</strong></p>
+      <p>
+        Cliques: <strong>{{ cliques }}</strong>
+      </p>
       <button @click="incrementar">Contar Clique</button>
     </div>
   </div>

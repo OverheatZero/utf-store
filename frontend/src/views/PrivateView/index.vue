@@ -29,7 +29,6 @@ const navigation = [
 function logout() {
   authStore.$reset()
 }
-
 </script>
 
 <template>

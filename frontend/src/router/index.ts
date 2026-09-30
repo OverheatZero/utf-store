@@ -15,7 +15,7 @@ const isAuthenticated = (): boolean => {
   return !!authStore.token
 }
 
-const getUserRole = () : string | undefined => {
+const getUserRole = (): string | undefined => {
   const userStore = useUserStore()
   return userStore.user?.role
 }
@@ -39,10 +39,9 @@ const getHomeByRole = (): string => {
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-
     {
       path: '/',
-      redirect: () => (isAuthenticated() ? getHomeByRole() : '/public/auth/signin')
+      redirect: () => (isAuthenticated() ? getHomeByRole() : '/public/auth/signin'),
     },
 
     {
